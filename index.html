@@ -6,9 +6,8 @@
 <meta name="theme-color" content="#0b0b10">
 <title>NES Web Player</title>
 
+<!-- ===== Font Awesome 6 (icons + buttons) ===== -->
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
       crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -22,13 +21,13 @@
     font:14px/1.4 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     overflow:hidden;
     -webkit-user-select:none;user-select:none;
-    -webkit-touch-callout:none;
     -webkit-tap-highlight-color:transparent;
     overscroll-behavior:none;
   }
 
+  /* ---------- drop overlay (icon + text) ---------- */
   body.dragging::before{
-    content:"\f019";
+    content:"\f019";                        /* fa-download */
     font-family:"Font Awesome 6 Free";
     font-weight:900;
     position:fixed;top:50%;left:50%;z-index:100;
@@ -59,32 +58,28 @@
     max-width:1400px;margin:0 auto;
   }
 
-  #bar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:nowrap}
+  /* ---------- toolbar ---------- */
+  #bar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px}
   .brand{
     display:flex;align-items:center;gap:7px;
     font-weight:800;letter-spacing:.16em;font-size:12px;color:#8b8ba7;
-    flex-shrink:0;background:none;border:0;padding:4px 6px;
-    border-radius:6px;cursor:pointer;font-family:inherit;
-    transition:color .15s,background .15s;
   }
-  .brand:hover{color:#fff;background:#16161f}
   .brand i{color:#e5484d;font-size:13px}
   .brand span{color:#e5484d}
-  .tools{display:flex;gap:6px;flex-wrap:nowrap;overflow:hidden}
+  .tools{display:flex;gap:6px}
   .tool{
     width:38px;height:34px;border-radius:9px;
     border:1px solid #2a2a38;background:#16161f;color:#c9c9d8;
     font-size:15px;line-height:1;cursor:pointer;
     display:grid;place-items:center;padding:0;
-    flex-shrink:0;
     transition:background .15s,border-color .15s,transform .06s,color .15s;
   }
   .tool:hover{background:#1e1e2b;border-color:#3a3a4d;color:#fff}
   .tool:active{transform:scale(.93)}
   .tool:disabled{opacity:.35;cursor:default;transform:none}
-  .tool:focus-visible{outline:2px solid #e5484d;outline-offset:1px}
   .tool i{font-size:15px;line-height:1;pointer-events:none}
 
+  /* --- icon-only buttons whose text is rewritten by the core --- */
   #btnPause,#btnMute{font-size:0}
   #btnPause::before,#btnMute::before{
     font-family:"Font Awesome 6 Free";
@@ -94,18 +89,18 @@
     display:block;
     pointer-events:none;
   }
-  #btnPause::before{content:"\f04b"}
-  #btnPause[data-running="true"]::before{content:"\f04c"}
-  #btnMute::before{content:"\f028"}
-  #btnMute[data-muted="true"]::before{content:"\f6a9"}
+  #btnPause::before{content:"\f04b"}                        /* fa-play  */
+  #btnPause[title="Pause (Esc)"]::before{content:"\f04c"}   /* fa-pause */
+  #btnMute::before{content:"\f028"}                         /* fa-volume-high */
+  #btnMute.off::before{content:"\f6a9"}                     /* fa-volume-xmark */
 
+  /* ---------- screen ---------- */
   #stage{
     position:relative;
     flex:1 1 auto;min-height:0;width:100%;
     display:flex;align-items:center;justify-content:center;
     background:#000;border-radius:10px;overflow:hidden;
     box-shadow:0 0 0 1px #23232e, 0 20px 50px rgba(0,0,0,.65);
-    touch-action:none;
   }
   #screen{
     display:block;
@@ -114,16 +109,16 @@
     background:#000;
   }
 
+  /* ---------- overlay ---------- */
   #overlay{
     position:absolute;inset:0;z-index:5;
     display:none;place-items:center;
     padding:20px;text-align:center;
-    background:rgba(8,8,12,.94);
-    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
-    overflow-y:auto;
+    background:rgba(8,8,12,.9);
+    -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);
   }
   #overlay.show{display:grid}
-  .card{max-width:560px;width:100%}
+  .card{max-width:470px}
   .card-icon{
     font-size:44px;color:#e5484d;margin-bottom:10px;
     filter:drop-shadow(0 8px 22px rgba(229,72,77,.45));
@@ -134,16 +129,11 @@
     50%    {transform:translateY(-6px)}
   }
   .card h1{margin:0 0 12px;font-size:22px;letter-spacing:.02em}
-  .card h2{margin:0 0 6px;font-size:18px;letter-spacing:.02em}
   .card p{margin:8px 0;color:#a9a9bf}
-  .card .meta{font-size:12px;color:#7c7c95;margin-bottom:14px}
-  .card .meta span{display:inline-block;margin:0 6px}
-
-  .btnrow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
 
   .primary{
     display:inline-flex;align-items:center;justify-content:center;gap:9px;
-    padding:12px 22px;border-radius:10px;border:0;
+    margin-top:6px;padding:12px 22px;border-radius:10px;border:0;
     background:linear-gradient(180deg,#e5484d,#c22b30);
     color:#fff;font-weight:700;font-size:14px;letter-spacing:.02em;
     cursor:pointer;transition:filter .15s,transform .06s,box-shadow .15s;
@@ -152,35 +142,15 @@
   .primary i{font-size:14px;pointer-events:none}
   .primary:hover{filter:brightness(1.12);box-shadow:0 10px 26px rgba(229,72,77,.42)}
   .primary:active{transform:scale(.97)}
-  .primary:focus-visible{outline:2px solid #fff;outline-offset:2px}
 
-  .ghost{
-    display:inline-flex;align-items:center;justify-content:center;gap:8px;
-    padding:10px 18px;border-radius:9px;
-    border:1px solid #34344a;background:#16161f;color:#c9c9d8;
-    font-weight:600;font-size:13px;cursor:pointer;
-    transition:background .15s,border-color .15s,color .15s;
-  }
-  .ghost:hover{background:#1e1e2b;border-color:#454560;color:#fff}
-  .ghost:active{transform:scale(.98)}
-
-  .hint{font-size:12px;line-height:1.9;color:#7c7c95;margin-top:14px}
+  .hint{font-size:12px;line-height:1.9;color:#7c7c95}
   .hint i{color:#8f8fb0;margin-right:4px}
   .hint b{color:#b9b9cc;font-weight:700}
-
-  .kgrid{
-    display:grid;grid-template-columns:auto 1fr;
-    gap:4px 14px;font-size:12px;line-height:1.6;
-    text-align:left;background:#111119;border:1px solid #22222e;
-    border-radius:10px;padding:14px 16px;margin-top:10px;
-    color:#a9a9bf;
-  }
-  .kgrid .k{color:#e5484d;font-weight:700;text-align:right;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-
-  .legal{font-size:11px;color:#5c5c72;margin-top:18px}
+  .legal{font-size:11px;color:#5c5c72;margin-top:16px}
   .legal i{margin-right:5px;color:#5c5c72}
   .err{color:#ff9090}
 
+  /* ---------- loading spinner (added) ---------- */
   .spin{
     display:inline-block;
     width:34px;height:34px;
@@ -188,7 +158,7 @@
     border-top-color:#e5484d;
     border-radius:50%;
     animation:spin .8s linear infinite;
-    margin:0 auto 6px;
+    margin-bottom:6px;
   }
   @keyframes spin{to{transform:rotate(360deg)}}
   .bar{
@@ -205,39 +175,12 @@
     100%{transform:translateX(360%)}
   }
 
-  .grid{
-    display:grid;grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
-    gap:10px;margin:16px 0;
-  }
-  .tile{
-    background:#14141c;border:1px solid #262636;border-radius:10px;
-    padding:12px;text-align:left;cursor:pointer;
-    transition:background .15s,border-color .15s,transform .08s;
-  }
-  .tile:hover{background:#1a1a24;border-color:#3a3a52;transform:translateY(-1px)}
-  .tile:active{transform:translateY(0)}
-  .tile .t{font-weight:700;font-size:13px;color:#fff;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .tile .a{font-size:11px;color:#7c7c95;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .tile .l{font-size:9.5px;color:#5c5c72;margin-top:4px;letter-spacing:.03em;text-transform:uppercase}
-
-  #toast{
-    position:fixed;left:50%;bottom:24px;
-    transform:translateX(-50%) translateY(10px);
-    padding:9px 16px;border-radius:9px;
-    background:#1e1e2b;color:#fff;font-size:12.5px;font-weight:600;
-    border:1px solid #34344a;box-shadow:0 10px 26px rgba(0,0,0,.5);
-    opacity:0;pointer-events:none;z-index:300;
-    transition:opacity .2s, transform .2s;
-    white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis;
-  }
-  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
+  /* ---------- touch controls ---------- */
   #touch{
     display:none;flex:0 0 auto;
     align-items:center;justify-content:space-between;
     gap:10px;padding:2px 2px 6px;
     touch-action:none;
-    max-width:640px;width:100%;margin:0 auto;
   }
   body.touch #touch{display:flex}
 
@@ -246,7 +189,6 @@
     grid-template-columns:repeat(3,52px);
     grid-template-rows:repeat(3,52px);
     gap:4px;
-    flex-shrink:0;
   }
   .dpad .up{grid-area:1/2}
   .dpad .left{grid-area:2/1}
@@ -277,34 +219,15 @@
   }
   .pill i{font-size:10px}
 
-  .actions{display:flex;flex-direction:column;gap:6px;align-items:center;padding-right:2px}
-  .ab-row{display:flex;align-items:center;gap:14px}
-  .turbo-row{display:flex;align-items:center;gap:14px}
+  .actions{display:flex;align-items:center;gap:14px;padding-right:4px}
   .round{width:62px;height:62px;border-radius:50%;font-size:17px;font-weight:800;letter-spacing:.03em}
-  .turbo{
-    width:54px;height:24px;border-radius:12px;
-    font-size:9px;letter-spacing:.06em;font-weight:800;
-  }
-  .turbo.on{background:#f5a623;border-color:#f5a623;color:#1a1a2e;box-shadow:0 0 14px rgba(245,166,35,.55)}
-  .turbo.turbo-b.on{background:#7ab8ff;border-color:#7ab8ff}
 
-  @media (max-width:520px){
-    .tool{width:34px;height:32px}
-    .tool i{font-size:13px}
-    #btnPause::before,#btnMute::before{font-size:13px}
-    .tools{gap:4px}
-  }
   @media (max-width:420px){
     .dpad{grid-template-columns:repeat(3,46px);grid-template-rows:repeat(3,46px)}
     .round{width:56px;height:56px}
     .pill{width:74px;height:29px;gap:4px}
     .pill i{font-size:9px}
-    .turbo{width:46px;height:22px;font-size:8px}
-    .brand span:not(.dot){display:none}
-  }
-  @media (max-width:360px){
-    .tool{width:30px;height:30px}
-    .tools{gap:3px}
+    .brand{display:none}
   }
 </style>
 </head>
@@ -312,29 +235,20 @@
 
 <div id="app">
   <header id="bar">
-    <button class="brand" id="brandHome" title="Home / picker">
+    <span class="brand">
       <i class="fa-solid fa-gamepad" aria-hidden="true"></i>
       NES<span>·</span>WEB
-    </button>
+    </span>
     <div class="tools">
-      <button class="tool" id="btnPause" data-running="false" title="Resume (Esc)" aria-label="Pause or resume" disabled></button>
+      <button class="tool" id="btnPause" title="Resume (Esc)" aria-label="Pause or resume" disabled></button>
       <button class="tool" id="btnReset" title="Reset" aria-label="Reset console" disabled>
         <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
       </button>
-      <button class="tool" id="btnSave" title="Save state" aria-label="Save state" disabled>
-        <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
-      </button>
-      <button class="tool" id="btnLoad" title="Load state" aria-label="Load state" disabled>
-        <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
-      </button>
-      <button class="tool" id="btnMute" data-muted="false" title="Mute" aria-label="Mute or unmute"></button>
-      <button class="tool" id="btnShader" title="Video filter: Off" aria-label="Cycle video filter">
-        <i class="fa-solid fa-tv" aria-hidden="true"></i>
-      </button>
-      <button class="tool" id="btnFull" title="Fullscreen" aria-label="Toggle fullscreen">
+      <button class="tool" id="btnMute"  title="Mute" aria-label="Mute or unmute"></button>
+      <button class="tool" id="btnFull"  title="Fullscreen" aria-label="Toggle fullscreen">
         <i class="fa-solid fa-expand" aria-hidden="true"></i>
       </button>
-      <button class="tool" id="btnOpen" title="Open ROM" aria-label="Open ROM file">
+      <button class="tool" id="btnOpen"  title="Open ROM" aria-label="Open ROM file">
         <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
       </button>
     </div>
@@ -342,15 +256,43 @@
 
   <main id="stage">
     <canvas id="screen" width="256" height="240"></canvas>
-    <div id="overlay" class="show"><div class="card" id="ovContent"></div></div>
+
+    <div id="overlay" class="show">
+      <div class="card">
+        <div class="card-icon"><i class="fa-solid fa-gamepad" aria-hidden="true"></i></div>
+        <h1>NES Web Player</h1>
+        <p id="ovMsg">Drop a <b>.nes</b> file anywhere, or choose one below.</p>
+        <button id="btnChoose" class="primary">
+          <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
+          Choose ROM…
+        </button>
+        <p class="hint">
+          <i class="fa-solid fa-keyboard" aria-hidden="true"></i>
+          <b>Arrows / WASD</b> — D‑pad &nbsp;·&nbsp; <b>X / K</b> — A &nbsp;·&nbsp; <b>Z / J</b> — B<br>
+          <b>Enter</b> — Start &nbsp;·&nbsp; <b>Shift</b> — Select &nbsp;·&nbsp; <b>Esc</b> — Pause
+        </p>
+        <p class="legal">
+          <i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>
+          Only run ROMs you have the right to use. Homebrew and public‑domain ROMs are safe to host on GitHub Pages.
+        </p>
+      </div>
+    </div>
   </main>
 
   <div id="touch">
     <div class="dpad">
-      <button class="tbtn up"    data-btn="4" aria-label="Up"><i class="fa-solid fa-caret-up" aria-hidden="true"></i></button>
-      <button class="tbtn left"  data-btn="6" aria-label="Left"><i class="fa-solid fa-caret-left" aria-hidden="true"></i></button>
-      <button class="tbtn right" data-btn="7" aria-label="Right"><i class="fa-solid fa-caret-right" aria-hidden="true"></i></button>
-      <button class="tbtn down"  data-btn="5" aria-label="Down"><i class="fa-solid fa-caret-down" aria-hidden="true"></i></button>
+      <button class="tbtn up"    data-btn="4" aria-label="Up">
+        <i class="fa-solid fa-caret-up" aria-hidden="true"></i>
+      </button>
+      <button class="tbtn left"  data-btn="6" aria-label="Left">
+        <i class="fa-solid fa-caret-left" aria-hidden="true"></i>
+      </button>
+      <button class="tbtn right" data-btn="7" aria-label="Right">
+        <i class="fa-solid fa-caret-right" aria-hidden="true"></i>
+      </button>
+      <button class="tbtn down"  data-btn="5" aria-label="Down">
+        <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+      </button>
     </div>
     <div class="mid">
       <button class="tbtn pill" data-btn="2" title="Select" aria-label="Select">
@@ -361,569 +303,228 @@
       </button>
     </div>
     <div class="actions">
-      <div class="turbo-row">
-        <button class="tbtn turbo turbo-b" data-turbo="1" title="Turbo B" aria-label="Turbo B">T·B</button>
-        <button class="tbtn turbo" data-turbo="0" title="Turbo A" aria-label="Turbo A">T·A</button>
-      </div>
-      <div class="ab-row">
-        <button class="tbtn round" data-btn="1" title="B button" aria-label="B button">B</button>
-        <button class="tbtn round" data-btn="0" title="A button" aria-label="A button">A</button>
-      </div>
+      <button class="tbtn round" data-btn="1" title="B button" aria-label="B button">B</button>
+      <button class="tbtn round" data-btn="0" title="A button" aria-label="A button">A</button>
     </div>
   </div>
 </div>
 
-<div id="toast" role="status" aria-live="polite"></div>
-
-<input type="file" id="file"
-       accept=".nes,.NES,.zip,.ZIP,application/octet-stream,application/zip" hidden>
+<input type="file" id="file" accept=".nes,.NES,application/octet-stream" hidden>
 
 <script>
 /* ============================================================
-   NES Web Player — upgraded single file
-   ------------------------------------------------------------
-   • WebGL CRT shader renderer (Off / Scanlines / CRT)
-   • Hosted ROM picker via roms/manifest.json
-   • ?game=<id> and ?rom=<url> deep links
-   • AUTO-LOAD of Super Mario Bros. (Japan, USA).nes from the
-     HexSleuth/NES-Web-Player GitHub repo on first boot —
-     tried across jsDelivr, raw.githubusercontent, raw.githack
-     and Statically mirrors. Falls back to the picker on
-     failure. Click the "NES·WEB" brand to return to the picker.
-   • Turbo A / Turbo B controls (pointer + T/Y keys)
-   • CPU + PPU trace logging (?debug=1)
-   • Runtime sample-rate sync with the device's audio context
-   • Synchronous ScriptProcessor audio — no async gap, no drops
+   NES Web Player — single file
+   Core: jsnes (https://github.com/bfirsh/jsnes) loaded from CDN
    ============================================================ */
 (function () {
   'use strict';
 
   /* ---------- constants ---------- */
   var W = 256, H = 240, PIXELS = W * H;
-  var FRAME_MS = 1000 / 60.0988;
-  var BTN = { A: 0, B: 1, SELECT: 2, START: 3, UP: 4, DOWN: 5, LEFT: 6, RIGHT: 7 };
+  var FRAME_MS = 1000 / 60.0988;              // NTSC NES frame rate
 
-  /* ---------- DEFAULT ROM (auto-loaded on first boot) ---------- */
-  var DEFAULT_ROM_REPO = 'HexSleuth/NES-Web-Player';
-  var DEFAULT_ROM_PATH = 'Super%20Mario%20Bros.%20(Japan%2C%20USA).nes';
-  var DEFAULT_ROM_NAME = 'Super Mario Bros. (Japan, USA).nes';
-  var DEFAULT_ROM_MIRRORS = [
-    'https://cdn.jsdelivr.net/gh/' + DEFAULT_ROM_REPO + '@main/' + DEFAULT_ROM_PATH,
-    'https://raw.githubusercontent.com/' + DEFAULT_ROM_REPO + '/main/' + DEFAULT_ROM_PATH,
-    'https://raw.githack.com/' + DEFAULT_ROM_REPO + '/main/' + DEFAULT_ROM_PATH,
-    'https://cdn.statically.io/gh/' + DEFAULT_ROM_REPO + '/main/' + DEFAULT_ROM_PATH
-  ];
+  var BTN = { A: 0, B: 1, SELECT: 2, START: 3, UP: 4, DOWN: 5, LEFT: 6, RIGHT: 7 };
 
   /* ---------- DOM ---------- */
   var canvas    = document.getElementById('screen');
+  var ctx       = canvas.getContext('2d', { alpha: false });
   var stage     = document.getElementById('stage');
   var overlay   = document.getElementById('overlay');
-  var ovContent = document.getElementById('ovContent');
+  var ovMsg     = document.getElementById('ovMsg');
   var fileInput = document.getElementById('file');
   var btnPause  = document.getElementById('btnPause');
   var btnReset  = document.getElementById('btnReset');
-  var btnSave   = document.getElementById('btnSave');
-  var btnLoad   = document.getElementById('btnLoad');
   var btnMute   = document.getElementById('btnMute');
-  var btnShader = document.getElementById('btnShader');
   var btnFull   = document.getElementById('btnFull');
   var btnOpen   = document.getElementById('btnOpen');
-  var brandHome = document.getElementById('brandHome');
-  var toastEl   = document.getElementById('toast');
+  var btnChoose = document.getElementById('btnChoose');
 
-  /* ============================================================
-     DEBUG / TRACE
-     ============================================================ */
-  var DEBUG = new URLSearchParams(location.search).has('debug');
-  var traceBuffer = [];
-  var ppuTraceBuffer = [];
-  var TRACE_MAX = 10000;
-
-  /* ============================================================
-     STATE
-     ============================================================ */
-  var nes         = null;
-  var running     = false;
-  var romBuffer   = null;
-  var romName     = '';
-  var needsRender = false;
-  var muted       = false;
-  var manifest    = [];
-  var manifestUrl = null;
-  var requestedGame = new URLSearchParams(location.search).get('game');
-  var directRom  = new URLSearchParams(location.search).get('rom');
-  var currentShader = 0;
-  var SHADER_NAMES = ['Off', 'Scanlines', 'CRT'];
-  var defaultRomLoading = false;
+  ctx.imageSmoothingEnabled = false;
 
   /* ---------- framebuffer ---------- */
-  var fbBytes = new Uint8Array(PIXELS * 4);
-  var fb32    = new Uint32Array(fbBytes.buffer);
-  var imageData = null;
-  var ctx2d = null;
+  var imageData = ctx.createImageData(W, H);
+  var buf32     = new Uint32Array(imageData.data.buffer);
   var LE = (function () {
     var b = new ArrayBuffer(4);
     new Uint32Array(b)[0] = 0x01020304;
     return new Uint8Array(b)[0] === 0x04;
   })();
 
-  /* ============================================================
-     WEBGL RENDERER
-     ============================================================ */
-  var gl = null;
-  var glProgram = null;
-  var glTex = null;
-  var glBuf = null;
-  var glAttr = null;
-  var glUniTex, glUniTexSize, glUniMode;
+  /* ---------- state ---------- */
+  var nes        = null;
+  var running    = false;
+  var romBuffer  = null;
+  var romName    = '';
+  var needsRender = false;
+  var muted      = false;
 
-  var VERT_SRC = [
-    'attribute vec2 aPos;',
-    'varying vec2 vUv;',
-    'void main(){',
-    '  vUv = vec2((aPos.x + 1.0) * 0.5, 1.0 - (aPos.y + 1.0) * 0.5);',
-    '  gl_Position = vec4(aPos, 0.0, 1.0);',
-    '}'
-  ].join('\n');
+  /* ---------- audio ---------- */
+  var audioCtx = null, gainNode = null, procNode = null;
 
-  var FRAG_SRC = [
-    'precision mediump float;',
-    'varying vec2 vUv;',
-    'uniform sampler2D uTex;',
-    'uniform vec2 uTexSize;',
-    'uniform int uMode;',
-    'void main(){',
-    '  vec2 uv = vUv;',
-    '  if (uMode >= 2) {',
-    '    vec2 c = uv - 0.5;',
-    '    float r2 = dot(c, c);',
-    '    uv = uv + c * r2 * 0.06;',
-    '    if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {',
-    '      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);',
-    '      return;',
-    '    }',
-    '  }',
-    '  vec3 col = texture2D(uTex, uv).rgb;',
-    '  if (uMode >= 1) {',
-    '    float scan = sin(uv.y * uTexSize.y * 3.14159265);',
-    '    scan = scan * 0.5 + 0.5;',
-    '    scan = mix(1.0, scan, 0.30);',
-    '    col *= scan;',
-    '  }',
-    '  if (uMode >= 2) {',
-    '    vec2 f = gl_FragCoord.xy;',
-    '    float m = mod(f.x, 3.0);',
-    '    vec3 mask;',
-    '    if (m < 1.0) mask = vec3(1.0, 0.86, 0.86);',
-    '    else if (m < 2.0) mask = vec3(0.86, 1.0, 0.86);',
-    '    else mask = vec3(0.86, 0.86, 1.0);',
-    '    col *= mask;',
-    '    vec2 d = vUv - 0.5;',
-    '    float vig = 1.0 - dot(d, d) * 0.85;',
-    '    col *= vig;',
-    '  }',
-    '  gl_FragColor = vec4(col, 1.0);',
-    '}'
-  ].join('\n');
-
-  function compileShader(type, src) {
-    var s = gl.createShader(type);
-    gl.shaderSource(s, src);
-    gl.compileShader(s);
-    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-      console.error('[WebGL] shader compile failed:', gl.getShaderInfoLog(s));
-      gl.deleteShader(s);
-      return null;
-    }
-    return s;
-  }
-
-  function initWebGL() {
-    var opts = { alpha: false, antialias: false, depth: false, stencil: false,
-                 preserveDrawingBuffer: false, powerPreference: 'high-performance' };
-    gl = canvas.getContext('webgl', opts) || canvas.getContext('experimental-webgl', opts);
-    if (!gl) return false;
-
-    var vs = compileShader(gl.VERTEX_SHADER, VERT_SRC);
-    var fs = compileShader(gl.FRAGMENT_SHADER, FRAG_SRC);
-    if (!vs || !fs) { gl = null; return false; }
-
-    glProgram = gl.createProgram();
-    gl.attachShader(glProgram, vs);
-    gl.attachShader(glProgram, fs);
-    gl.linkProgram(glProgram);
-    if (!gl.getProgramParameter(glProgram, gl.LINK_STATUS)) {
-      console.error('[WebGL] program link failed:', gl.getProgramInfoLog(glProgram));
-      gl = null; return false;
-    }
-    gl.useProgram(glProgram);
-
-    glBuf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, glBuf);
-    gl.bufferData(gl.ARRAY_BUFFER,
-      new Float32Array([-1, -1, 3, -1, -1, 3]),
-      gl.STATIC_DRAW);
-    glAttr = gl.getAttribLocation(glProgram, 'aPos');
-    gl.enableVertexAttribArray(glAttr);
-    gl.vertexAttribPointer(glAttr, 2, gl.FLOAT, false, 0, 0);
-
-    glTex = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, glTex);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, W, H, 0, gl.RGBA, gl.UNSIGNED_BYTE, fbBytes);
-
-    glUniTex     = gl.getUniformLocation(glProgram, 'uTex');
-    glUniTexSize = gl.getUniformLocation(glProgram, 'uTexSize');
-    glUniMode    = gl.getUniformLocation(glProgram, 'uMode');
-
-    gl.uniform1i(glUniTex, 0);
-    gl.uniform2f(glUniTexSize, W, H);
-    gl.uniform1i(glUniMode, currentShader);
-
-    canvas.addEventListener('webglcontextlost', function (e) {
-      e.preventDefault();
-      console.warn('[WebGL] context lost');
-    });
-    canvas.addEventListener('webglcontextrestored', function () {
-      console.log('[WebGL] context restored — reinitialising');
-      gl = null; initWebGL();
-    });
-
-    return true;
-  }
-
-  function renderWebGL() {
-    if (!gl) return;
-    gl.bindTexture(gl.TEXTURE_2D, glTex);
-    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, W, H,
-                     gl.RGBA, gl.UNSIGNED_BYTE, fbBytes);
-    gl.uniform1i(glUniMode, currentShader);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-  }
-
-  function render2D() {
-    if (!ctx2d || !imageData) return;
-    ctx2d.putImageData(imageData, 0, 0);
-  }
-
-  var useWebGL = initWebGL();
-  if (!useWebGL) {
-    console.warn('[NES] WebGL unavailable — using 2D canvas renderer');
-    ctx2d = canvas.getContext('2d', { alpha: false });
-    ctx2d.imageSmoothingEnabled = false;
-    imageData = ctx2d.createImageData(W, H);
-  }
-
-  /* ============================================================
-     AUDIO — synchronous ScriptProcessor pipeline
-     ============================================================ */
-  var audioCtx      = null;
-  var gainNode      = null;
-  var procNode      = null;
-  var audioSampleCount = 0;
-
-  var RING = 16384;
-  var MASK = RING - 1;
+  var RING = 8192, MASK = RING - 1;
   var ringL = new Float32Array(RING);
   var ringR = new Float32Array(RING);
   var wIdx = 0, rIdx = 0;
 
   function audioPush(l, r) {
-    if (typeof l === 'number' && typeof r === 'number') {
-      pushOne(l, r);
-    } else if (l && l.length) {
-      for (var i = 0; i < l.length; i++) pushOne(l[i], r[i]);
-    }
-    if (audioSampleCount === 1) {
-      console.log('[NES] Audio active — first sample received');
-    }
-  }
-
-  function pushOne(l, r) {
     var next = (wIdx + 1) & MASK;
-    if (next === rIdx) return;
+    if (next === rIdx) return;        // ring full — drop sample
     ringL[wIdx] = l;
     ringR[wIdx] = r;
     wIdx = next;
-    audioSampleCount++;
   }
 
   function initAudio() {
     if (audioCtx) {
-      if (audioCtx.state !== 'running') audioCtx.resume().catch(function () {});
+      if (audioCtx.state === 'suspended') audioCtx.resume();
       return;
     }
     var AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) { console.warn('[NES] Web Audio API not supported'); return; }
+    if (!AC) return;
+
     try {
-      audioCtx = new AC({ latencyHint: 'interactive' });
+      audioCtx = new AC({ sampleRate: 44100, latencyHint: 'interactive' });
     } catch (e) {
-      try { audioCtx = new AC(); } catch (e2) { return; }
+      audioCtx = new AC();
     }
-    console.log('[NES] AudioContext — sampleRate:', audioCtx.sampleRate, 'Hz');
 
     gainNode = audioCtx.createGain();
-    gainNode.gain.value = muted ? 0 : 0.9;
-    gainNode.connect(audioCtx.destination);
+    gainNode.gain.value = muted ? 0 : 0.25;
 
-    try {
-      procNode = audioCtx.createScriptProcessor(2048, 0, 2);
-    } catch (e) {
-      try { procNode = audioCtx.createScriptProcessor(4096, 0, 2); }
-      catch (e2) { return; }
-    }
-
+    procNode = audioCtx.createScriptProcessor(1024, 0, 2);
     procNode.onaudioprocess = function (e) {
       var L = e.outputBuffer.getChannelData(0);
       var R = e.outputBuffer.getChannelData(1);
-      var avail = (wIdx - rIdx) & MASK;
-      var i = 0;
-      for (; i < L.length && avail > 0; i++, avail--) {
-        L[i] = ringL[rIdx];
-        R[i] = ringR[rIdx];
-        rIdx = (rIdx + 1) & MASK;
+      for (var i = 0; i < L.length; i++) {
+        if (rIdx !== wIdx) {
+          L[i] = ringL[rIdx];
+          R[i] = ringR[rIdx];
+          rIdx = (rIdx + 1) & MASK;
+        } else {
+          L[i] = 0; R[i] = 0;
+        }
       }
-      for (; i < L.length; i++) { L[i] = 0; R[i] = 0; }
     };
     procNode.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
 
-    if (audioCtx.state !== 'running') audioCtx.resume().catch(function () {});
+    if (audioCtx.state === 'suspended') audioCtx.resume();
   }
 
-  function unlockAudio() {
-    if (!audioCtx) { initAudio(); return; }
-    if (audioCtx.state !== 'running') {
-      audioCtx.resume().then(function () {
-        rIdx = wIdx;
-      }).catch(function () {});
-    }
-  }
-
-  ['pointerdown', 'touchstart', 'mousedown', 'keydown', 'click'].forEach(function (ev) {
-    window.addEventListener(ev, unlockAudio, { passive: true, capture: true });
-  });
-
-  document.addEventListener('visibilitychange', function () {
-    if (!document.hidden && audioCtx && audioCtx.state === 'suspended') {
-      audioCtx.resume().catch(function () {});
-    }
-  });
-
-  /* ============================================================
-     VIDEO FRAME
-     ============================================================ */
+  /* ---------- video ---------- */
   function onFrame(fb) {
     if (LE) {
+      // jsnes gives 0x00BBGGRR; LE u32 wants 0xAABBGGRR -> identical layout
       for (var i = 0; i < PIXELS; i++) {
-        fb32[i] = (fb[i] & 0x00FFFFFF) | 0xFF000000;
+        buf32[i] = (fb[i] & 0x00FFFFFF) | 0xFF000000;
       }
     } else {
+      var d = imageData.data;
       for (var j = 0, k = 0; j < PIXELS; j++, k += 4) {
         var p = fb[j];
-        fbBytes[k]     =  p         & 0xFF;
-        fbBytes[k + 1] = (p >>> 8)  & 0xFF;
-        fbBytes[k + 2] = (p >>> 16) & 0xFF;
-        fbBytes[k + 3] = 0xFF;
+        d[k]     =  p         & 0xFF;
+        d[k + 1] = (p >>> 8)  & 0xFF;
+        d[k + 2] = (p >>> 16) & 0xFF;
+        d[k + 3] = 0xFF;
       }
-    }
-    if (!useWebGL && imageData) {
-      new Uint8Array(imageData.data.buffer).set(fbBytes);
     }
     needsRender = true;
   }
 
-  /* ============================================================
-     HELPERS
-     ============================================================ */
+  /* ---------- helpers ---------- */
   function toBinaryString(u8) {
     var out = '', CH = 0x8000;
     for (var i = 0; i < u8.length; i += CH) {
       out += String.fromCharCode.apply(
-        null, u8.subarray(i, Math.min(i + CH, u8.length)));
+        null,
+        u8.subarray(i, Math.min(i + CH, u8.length))
+      );
     }
     return out;
   }
 
-  function esc(s) {
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
-
   function showOverlay(html) {
-    ovContent.innerHTML = html;
+    if (html !== undefined) ovMsg.innerHTML = html;
     overlay.classList.add('show');
     requestAnimationFrame(resize);
   }
 
-  function hideOverlay() { overlay.classList.remove('show'); }
-
   function showError(msg) {
     running = false;
     updatePauseBtn();
-    showOverlay(
-      '<div class="card-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>' +
-      '<h1>Something went wrong</h1>' +
-      '<p class="err">' + esc(msg) + '</p>' +
-      '<div class="btnrow"><button class="ghost" data-action="home">' +
-      '<i class="fa-solid fa-house"></i>Home</button></div>'
-    );
-  }
-
-  var toastTimer = null;
-  function toast(msg) {
-    toastEl.textContent = msg;
-    toastEl.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 1700);
+    showOverlay('<span class="err">' + String(msg)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') +
+      '</span>');
   }
 
   function updatePauseBtn() {
-    btnPause.dataset.running = running ? 'true' : 'false';
+    btnPause.textContent = running ? '❚❚' : '▶';
     btnPause.title = running ? 'Pause (Esc)' : 'Resume (Esc)';
   }
 
-  /* ============================================================
-     SIZING
-     ============================================================ */
+  /* ---------- sizing ---------- */
   function resize() {
     var availW = stage.clientWidth;
     var availH = stage.clientHeight;
     if (!availW || !availH) return;
     var scale = Math.min(availW / W, availH / H);
-    var cw = Math.max(1, Math.round(W * scale));
-    var ch = Math.max(1, Math.round(H * scale));
-    canvas.style.width  = cw + 'px';
-    canvas.style.height = ch + 'px';
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var bw = Math.round(cw * dpr);
-    var bh = Math.round(ch * dpr);
-    if (canvas.width !== bw || canvas.height !== bh) {
-      canvas.width = bw; canvas.height = bh;
-      if (gl) gl.viewport(0, 0, bw, bh);
-    }
+    canvas.style.width  = Math.max(1, Math.round(W * scale)) + 'px';
+    canvas.style.height = Math.max(1, Math.round(H * scale)) + 'px';
   }
 
-  if (window.ResizeObserver) new ResizeObserver(resize).observe(stage);
-  else window.addEventListener('resize', resize);
-  window.addEventListener('orientationchange', function () { setTimeout(resize, 220); });
-
-  /* ============================================================
-     ROM LOADING
-     ============================================================ */
-  function isINES(bytes) {
-    return bytes.length >= 16 &&
-           bytes[0] === 0x4E && bytes[1] === 0x45 &&
-           bytes[2] === 0x53 && bytes[3] === 0x1A;
+  if (window.ResizeObserver) {
+    new ResizeObserver(resize).observe(stage);
+  } else {
+    window.addEventListener('resize', resize);
   }
-  function isUNIF(bytes) {
-    return bytes.length >= 4 &&
-           bytes[0] === 0x55 && bytes[1] === 0x4E &&
-           bytes[2] === 0x49 && bytes[3] === 0x46;
-  }
-  function isZip(bytes) {
-    return bytes.length >= 4 &&
-           bytes[0] === 0x50 && bytes[1] === 0x4B &&
-           (bytes[2] === 0x03 || bytes[2] === 0x05 || bytes[2] === 0x07) &&
-           (bytes[3] === 0x04 || bytes[3] === 0x06 || bytes[3] === 0x08);
-  }
+  window.addEventListener('orientationchange', function () {
+    setTimeout(resize, 220);
+  });
 
-  function installTrace(nes) {
-    if (!DEBUG) return;
-    traceBuffer.length = 0;
-    ppuTraceBuffer.length = 0;
-
-    var origCpu = nes.cpu.emulate.bind(nes.cpu);
-    nes.cpu.emulate = function () {
-      if (traceBuffer.length < TRACE_MAX) {
-        var pc = nes.cpu.REG_PC;
-        var op = nes.cpu.load(pc);
-        traceBuffer.push(
-          pc.toString(16).padStart(4, '0') + ':' +
-          op.toString(16).padStart(2, '0')
-        );
-      }
-      origCpu();
-    };
-
-    var origPpuWrite = nes.ppu.write.bind(nes.ppu);
-    nes.ppu.write = function (addr, val) {
-      if (ppuTraceBuffer.length < TRACE_MAX) {
-        ppuTraceBuffer.push(
-          '$' + addr.toString(16).padStart(4, '0') + '=' +
-          val.toString(16).padStart(2, '0')
-        );
-      }
-      origPpuWrite(addr, val);
-    };
-
-    window.__nesTrace = function () {
-      console.log('[NES] CPU trace (' + traceBuffer.length + ' entries):');
-      console.log(traceBuffer.join('\n'));
-      return traceBuffer.slice();
-    };
-    window.__nesPpuTrace = function () {
-      console.log('[NES] PPU trace (' + ppuTraceBuffer.length + ' entries):');
-      console.log(ppuTraceBuffer.join('\n'));
-      return ppuTraceBuffer.slice();
-    };
-    console.log('[NES] Debug mode ON — call __nesTrace() / __nesPpuTrace() to dump.');
-  }
-
+  /* ---------- ROM loading ---------- */
   function loadROM(buffer, name) {
     try {
       var bytes = new Uint8Array(buffer);
-      if (isUNIF(bytes)) throw new Error('UNIF ROMs are not supported — use an iNES .nes file.');
-      if (!isINES(bytes)) throw new Error('Not a valid iNES ROM (missing "NES\\x1A" header).');
-      if (!window.jsnes) throw new Error('Emulator core is not loaded yet.');
+
+      if (bytes.length < 16 ||
+          bytes[0] !== 0x4E || bytes[1] !== 0x45 ||
+          bytes[2] !== 0x53 || bytes[3] !== 0x1A) {
+        throw new Error('Not a valid iNES ROM (missing "NES\\x1A" header).');
+      }
+      if (!window.jsnes) {
+        throw new Error('Emulator core is not loaded yet. Check your network connection.');
+      }
 
       romBuffer = buffer.slice(0);
       romName = name || 'game.nes';
 
       initAudio();
-      wIdx = rIdx = 0;
-      audioSampleCount = 0;
-      heldKeys.clear();
 
-      var sr = audioCtx ? audioCtx.sampleRate : 44100;
+      // reset audio ring
+      wIdx = rIdx = 0;
 
       nes = new window.jsnes.NES({
         onFrame: onFrame,
         onAudioSample: audioPush,
         onStatusUpdate: function () {},
         emulateSound: true,
-        sampleRate: sr
+        sampleRate: audioCtx ? audioCtx.sampleRate : 44100
       });
-      if (nes.apu) nes.apu.onAudioSample = audioPush;
 
       nes.loadROM(toBinaryString(bytes));
 
-      if (typeof window.__applyMMC1Fix === 'function') {
-        try { window.__applyMMC1Fix(nes); } catch (e) { console.warn('[NES] MMC1 fix failed', e); }
-      }
-
-      installTrace(nes);
-
       running = true;
       needsRender = true;
-      hideOverlay();
-      document.title = romName.replace(/\.(nes|zip)$/i, '') + ' — NES Web Player';
+      heldKeys.clear();
 
+      overlay.classList.remove('show');
+      document.title = romName.replace(/\.nes$/i, '') + ' — NES Web Player';
       btnPause.disabled = false;
       btnReset.disabled = false;
-      btnSave.disabled = (typeof nes.toJSON !== 'function');
-      btnLoad.disabled = (typeof nes.fromJSON !== 'function');
       updatePauseBtn();
 
       last = 0; acc = 0;
       requestAnimationFrame(resize);
-
-      setTimeout(function () {
-        if (audioSampleCount === 0 && audioCtx && audioCtx.state === 'running') {
-          console.warn('[NES] No audio samples received after 3 s.');
-        }
-      }, 3000);
     } catch (err) {
       console.error(err);
       showError((err && err.message) ? err.message : String(err));
@@ -932,333 +533,19 @@
 
   function handleFile(file) {
     if (!file) return;
-    var lname = (file.name || '').toLowerCase();
-    if (lname.endsWith('.zip')) { handleZip(file); return; }
     var reader = new FileReader();
     reader.onload = function () { loadROM(reader.result, file.name); };
     reader.onerror = function () { showError('Could not read that file.'); };
     reader.readAsArrayBuffer(file);
   }
 
-  function handleZip(file) {
-    showOverlay(
-      '<span class="spin"></span>' +
-      '<h1>Reading archive…</h1>' +
-      '<div class="bar"><i></i></div>'
-    );
-    ensureJSZip()
-      .then(function () { return file.arrayBuffer(); })
-      .then(function (buf) { return window.JSZip.loadAsync(buf); })
-      .then(function (zip) {
-        var names = Object.keys(zip.files).filter(function (n) {
-          return /\.nes$/i.test(n) && !zip.files[n].dir;
-        });
-        if (!names.length) throw new Error('No .nes file inside the .zip.');
-        return zip.files[names[0]].async('arraybuffer')
-          .then(function (rom) { return { rom: rom, name: names[0] }; });
-      })
-      .then(function (r) { loadROM(r.rom, r.name); })
-      .catch(function (e) { showError('Zip load failed: ' + (e.message || e)); });
-  }
-
-  var jszipPromise = null;
-  function ensureJSZip() {
-    if (window.JSZip) return Promise.resolve();
-    if (jszipPromise) return jszipPromise;
-    var urls = [
-      'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js',
-      'https://unpkg.com/jszip@3.10.1/dist/jszip.min.js'
-    ];
-    jszipPromise = new Promise(function (resolve, reject) {
-      var i = 0;
-      (function next() {
-        if (i >= urls.length) { jszipPromise = null; reject(new Error('Could not load JSZip.')); return; }
-        loadScript(urls[i++]).then(function () {
-          if (window.JSZip) resolve(); else next();
-        }).catch(next);
-      })();
-    });
-    return jszipPromise;
-  }
-
-  /* ============================================================
-     MANIFEST + HOSTED PICKER
-     ============================================================ */
-  function resolveRomUrl(entryUrl) {
-    if (/^https?:\/\//.test(entryUrl) || entryUrl.startsWith('/')) return entryUrl;
-    try { return new URL(entryUrl, manifestUrl).href; }
-    catch (e) { return entryUrl; }
-  }
-
-  function findGame(id) {
-    for (var i = 0; i < manifest.length; i++) {
-      if (manifest[i].id === id) return manifest[i];
-    }
-    return null;
-  }
-
-  function fetchManifest() {
-    var url = new URL('roms/manifest.json', location.href).href;
-    return fetchWithTimeout(url, { cache: 'no-cache' }, 8000)
-      .then(function (r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
-      })
-      .then(function (json) {
-        if (!Array.isArray(json)) throw new Error('Manifest is not an array');
-        manifestUrl = url;
-        manifest = json.filter(function (e) {
-          return e && typeof e.id === 'string' && typeof e.url === 'string';
-        });
-        console.log('[NES] Manifest loaded —', manifest.length, 'games');
-      })
-      .catch(function (e) {
-        console.log('[NES] Manifest not available:', e.message);
-        manifest = [];
-      });
-  }
-
-  /* ============================================================
-     AUTO-LOAD DEFAULT ROM (Super Mario Bros.)
-     ============================================================ */
-  function playDefaultRom() {
-    if (defaultRomLoading) return;
-    defaultRomLoading = true;
-
-    initAudio();
-    unlockAudio();
-
-    showOverlay(
-      '<div class="card-icon"><i class="fa-solid fa-gamepad"></i></div>' +
-      '<h1>Loading Super Mario Bros.…</h1>' +
-      '<p style="font-size:12px;color:#7c7c95">' + esc(DEFAULT_ROM_NAME) + '</p>' +
-      '<div class="bar"><i></i></div>' +
-      '<p style="font-size:11px;color:#5c5c72;margin-top:14px">' +
-      'If nothing happens, tap the screen once to unlock audio.</p>'
-    );
-
-    var i = 0;
-    function tryNext() {
-      if (i >= DEFAULT_ROM_MIRRORS.length) {
-        defaultRomLoading = false;
-        renderDefaultLanding(
-          '<p class="err" style="margin-top:14px">Could not reach any ROM mirror. ' +
-          'Check your connection, then try again below.</p>'
-        );
-        return;
-      }
-      var url = DEFAULT_ROM_MIRRORS[i];
-      var idx = i++;
-      console.log('[NES] Trying ROM mirror ' + idx + ': ' + url);
-
-      fetchWithTimeout(url, { cache: 'force-cache', mode: 'cors' }, 15000)
-        .then(function (r) {
-          if (!r.ok) throw new Error('HTTP ' + r.status);
-          return r.arrayBuffer();
-        })
-        .then(function (buf) {
-          if (!isINES(new Uint8Array(buf))) {
-            throw new Error('Invalid iNES header from mirror ' + idx);
-          }
-          defaultRomLoading = false;
-          console.log('[NES] ROM loaded from mirror ' + idx);
-          loadROM(buf, DEFAULT_ROM_NAME);
-        })
-        .catch(function (e) {
-          console.warn('[NES] Mirror ' + idx + ' failed:', e.message);
-          tryNext();
-        });
-    }
-    tryNext();
-  }
-
-  /* ============================================================
-     LANDING OVERLAYS
-     ============================================================ */
-  function renderDefaultLanding(errorHtml) {
-    var picker = '';
-    if (manifest.length > 0) {
-      picker = '<p style="font-size:12px;color:#7c7c95;margin-top:20px">' +
-               'Hosted games:</p>' +
-               '<div class="grid">' + manifest.map(function (g) {
-                 return '<button class="tile" data-action="play" data-game="' + esc(g.id) + '">' +
-                        '<div class="t">' + esc(g.title || g.id) + '</div>' +
-                        (g.author ? '<div class="a">' + esc(g.author) + '</div>' : '') +
-                        (g.license ? '<div class="l">' + esc(g.license) + '</div>' : '') +
-                        '</button>';
-               }).join('') + '</div>';
-    }
-    showOverlay(
-      '<div class="card-icon"><i class="fa-solid fa-gamepad"></i></div>' +
-      '<h1>NES Web Player</h1>' +
-      '<p>Ready to play <b>Super Mario Bros.</b>, or load your own ROM.</p>' +
-      (errorHtml || '') +
-      '<div class="btnrow">' +
-      '<button class="primary" data-action="play-default">' +
-      '<i class="fa-solid fa-play"></i>Play Super Mario Bros.</button>' +
-      '</div>' +
-      '<div class="btnrow" style="margin-top:8px">' +
-      '<button class="ghost" data-action="choose">' +
-      '<i class="fa-solid fa-folder-open"></i>Choose ROM…</button>' +
-      '</div>' + picker +
-      '<p class="hint"><i class="fa-solid fa-keyboard"></i>' +
-      '<b>Arrows / WASD</b> — D-pad · <b>X / K</b> — A · <b>Z / J</b> — B<br>' +
-      '<b>Enter</b> — Start · <b>Shift</b> — Select · <b>Esc</b> — Pause<br>' +
-      '<b>T / Y</b> — Turbo A / Turbo B</p>' +
-      '<p class="legal"><i class="fa-solid fa-scale-balanced"></i>' +
-      'Only run ROMs you have the right to use. Homebrew and public-domain ROMs ' +
-      'are safe to host on GitHub Pages.</p>'
-    );
-  }
-
-  function renderGameLanding(game) {
-    var title = esc(game.title || game.id);
-    var meta = '';
-    if (game.author) meta += '<span>' + esc(game.author) + '</span>';
-    if (game.license) meta += '<span>' + esc(game.license) + '</span>';
-
-    var customControls = '';
-    if (game.controls && typeof game.controls === 'string') {
-      customControls = '<div class="kgrid" style="grid-template-columns:1fr">' +
-                       esc(game.controls) + '</div>';
-    } else {
-      customControls =
-        '<div class="kgrid">' +
-        '<span class="k">Arrows / WASD</span><span>D-Pad</span>' +
-        '<span class="k">X / K</span><span>A button</span>' +
-        '<span class="k">Z / J</span><span>B button</span>' +
-        '<span class="k">Enter</span><span>Start</span>' +
-        '<span class="k">Shift</span><span>Select</span>' +
-        '<span class="k">Esc / P</span><span>Pause</span>' +
-        '<span class="k">T / Y</span><span>Turbo A / Turbo B</span>' +
-        '</div>';
-    }
-
-    showOverlay(
-      '<div class="card-icon"><i class="fa-solid fa-gamepad"></i></div>' +
-      '<h2>' + title + '</h2>' +
-      (meta ? '<div class="meta">' + meta + '</div>' : '') +
-      '<p style="font-size:12.5px;color:#a9a9bf">' +
-      'Tap <b>Play</b> to start — this gesture unlocks audio on mobile browsers.</p>' +
-      customControls +
-      '<div class="btnrow">' +
-      '<button class="primary" data-action="play" data-game="' + esc(game.id) + '">' +
-      '<i class="fa-solid fa-play"></i>Play</button>' +
-      '<button class="ghost" data-action="home">' +
-      '<i class="fa-solid fa-house"></i>Home</button>' +
-      '</div>' +
-      '<p class="legal"><i class="fa-solid fa-scale-balanced"></i>' +
-      'ROM content is separate from this application\'s license. See THIRD_PARTY_ROMS.md ' +
-      'for attribution.</p>'
-    );
-  }
-
-  function renderDirectRomLanding(url) {
-    showOverlay(
-      '<div class="card-icon"><i class="fa-solid fa-gamepad"></i></div>' +
-      '<h1>Load ROM from URL</h1>' +
-      '<p style="font-size:12px;color:#7c7c95;word-break:break-all">' + esc(url) + '</p>' +
-      '<div class="btnrow">' +
-      '<button class="primary" id="btnPlayDirect">' +
-      '<i class="fa-solid fa-play"></i>Play</button>' +
-      '<button class="ghost" data-action="home">' +
-      '<i class="fa-solid fa-house"></i>Home</button>' +
-      '</div>'
-    );
-    var p = document.getElementById('btnPlayDirect');
-    if (p) p.addEventListener('click', function () {
-      initAudio();
-      unlockAudio();
-      showOverlay('<span class="spin"></span><h1>Loading…</h1><div class="bar"><i></i></div>');
-      fetchWithTimeout(url, { mode: 'cors' }, 20000)
-        .then(function (r) {
-          if (!r.ok) throw new Error('HTTP ' + r.status);
-          return r.arrayBuffer();
-        })
-        .then(function (buf) {
-          loadROM(buf, url.split('/').pop().split('?')[0] || 'game.nes');
-        })
-        .catch(function (e) { showError('Could not load URL: ' + e.message); });
-    });
-  }
-
-  function renderLanding() {
-    if (requestedGame) {
-      var g = findGame(requestedGame);
-      if (g) { renderGameLanding(g); return; }
-      showError('Game "' + requestedGame + '" was not found in the manifest.');
-      return;
-    }
-    if (directRom) { renderDirectRomLanding(directRom); return; }
-    /* Auto-load SMB on first boot, unless a ?game= or ?rom= is set */
-    playDefaultRom();
-  }
-
-  function loadGame(gameId) {
-    var g = findGame(gameId);
-    if (!g) { showError('Unknown game: ' + gameId); return; }
-    showOverlay(
-      '<span class="spin"></span>' +
-      '<h1>Loading ' + esc(g.title || g.id) + '…</h1>' +
-      '<div class="bar"><i></i></div>'
-    );
-    initAudio();
-    unlockAudio();
-    var url = resolveRomUrl(g.url);
-    fetchWithTimeout(url, { cache: 'force-cache', mode: 'cors' }, 20000)
-      .then(function (r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.arrayBuffer();
-      })
-      .then(function (buf) {
-        if (!isINES(new Uint8Array(buf))) throw new Error('Invalid iNES header');
-        loadROM(buf, (g.title || g.id) + '.nes');
-      })
-      .catch(function (e) { showError('Could not load game: ' + e.message); });
-  }
-
-  /* ---------- overlay click delegation ---------- */
-  overlay.addEventListener('click', function (e) {
-    var btn = e.target.closest('[data-action]');
-    if (!btn) return;
-    var action = btn.dataset.action;
-    if (action === 'choose') {
-      unlockAudio();
-      fileInput.click();
-    } else if (action === 'play') {
-      loadGame(btn.dataset.game);
-    } else if (action === 'play-default') {
-      playDefaultRom();
-    } else if (action === 'home') {
-      requestedGame = null;
-      try { history.replaceState({}, '', location.pathname); } catch (err) {}
-      renderDefaultLanding();
-    }
-  });
-
-  /* ---------- brand logo -> picker ---------- */
-  brandHome.addEventListener('click', function () {
-    if (nes && running) {
-      if (!confirm('Return to the game picker? Your current progress will be lost.')) return;
-    }
-    running = false;
-    updatePauseBtn();
-    nes = null;
-    romBuffer = null;
-    requestedGame = null;
-    try { history.replaceState({}, '', location.pathname); } catch (err) {}
-    renderDefaultLanding();
-  });
-
-  /* ============================================================
-     MAIN LOOP
-     ============================================================ */
+  /* ---------- main loop ---------- */
   var last = 0, acc = 0;
 
   function tick(t) {
     requestAnimationFrame(tick);
+
     pollGamepads();
-    processTurbo();
 
     if (!running || !nes) {
       last = t; acc = 0;
@@ -1268,7 +555,7 @@
     if (!last) last = t;
     var dt = t - last;
     last = t;
-    if (dt > 200) dt = 200;
+    if (dt > 200) dt = 200;          // tab was backgrounded
     acc += dt;
 
     var frames = 0;
@@ -1277,125 +564,75 @@
       acc -= FRAME_MS;
       frames++;
     }
-    if (frames >= 3) acc = 0;
+    if (frames >= 3) acc = 0;        // drop backlog, don't spiral
 
     if (needsRender) {
-      if (useWebGL) renderWebGL();
-      else render2D();
+      ctx.putImageData(imageData, 0, 0);
       needsRender = false;
     }
   }
   requestAnimationFrame(tick);
 
-  /* ============================================================
-     PAUSE / RESET / SAVE / LOAD
-     ============================================================ */
+  /* ---------- pause / reset ---------- */
   function setRunning(v) {
     if (!nes) return;
     running = v;
     updatePauseBtn();
     if (running) {
       last = 0; acc = 0;
-      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(function () {});
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     } else {
-      wIdx = rIdx = 0;
+      wIdx = rIdx = 0;               // flush queued audio
     }
   }
 
   btnPause.addEventListener('click', function () { setRunning(!running); });
+
   btnReset.addEventListener('click', function () {
     if (romBuffer) loadROM(romBuffer, romName);
   });
 
-  btnSave.addEventListener('click', function () {
-    if (!nes || typeof nes.toJSON !== 'function') { toast('Save states not supported.'); return; }
-    try {
-      localStorage.setItem('nes-save-state', JSON.stringify(nes.toJSON()));
-      toast('State saved');
-    } catch (e) { toast('Save failed: ' + (e.message || e)); }
-  });
-  btnLoad.addEventListener('click', function () {
-    if (!nes || typeof nes.fromJSON !== 'function') { toast('Load states not supported.'); return; }
-    var raw = null;
-    try { raw = localStorage.getItem('nes-save-state'); } catch (e) {}
-    if (!raw) { toast('No saved state'); return; }
-    try {
-      nes.fromJSON(JSON.parse(raw));
-      wIdx = rIdx = 0;
-      running = true; updatePauseBtn();
-      needsRender = true;
-      last = 0; acc = 0;
-      toast('State loaded');
-    } catch (e) { toast('Load failed: ' + (e.message || e)); }
-  });
-
-  /* ============================================================
-     MUTE
-     ============================================================ */
+  /* ---------- mute ---------- */
   btnMute.addEventListener('click', function () {
     muted = !muted;
-    if (gainNode) gainNode.gain.value = muted ? 0 : 0.9;
-    btnMute.dataset.muted = muted ? 'true' : 'false';
-    btnMute.title = muted ? 'Unmute' : 'Mute';
+    if (gainNode) gainNode.gain.value = muted ? 0 : 0.25;
+    btnMute.textContent = muted ? '🔇' : '🔊';
+    btnMute.classList.toggle('off', muted);
   });
 
-  /* ============================================================
-     SHADER CYCLE
-     ============================================================ */
-  function cycleShader() {
-    currentShader = (currentShader + 1) % SHADER_NAMES.length;
-    btnShader.title = 'Video filter: ' + SHADER_NAMES[currentShader];
-    if (gl) gl.uniform1i(glUniMode, currentShader);
-    if (running) needsRender = true;
-    toast('Filter: ' + SHADER_NAMES[currentShader]);
-  }
-  btnShader.addEventListener('click', cycleShader);
-
-  /* ============================================================
-     FULLSCREEN
-     ============================================================ */
+  /* ---------- fullscreen ---------- */
   btnFull.addEventListener('click', function () {
     var el = document.getElementById('app');
     var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
     if (!fsEl) {
       var req = el.requestFullscreen || el.webkitRequestFullscreen;
-      if (req) {
-        try {
-          var p = req.call(el);
-          if (p && p.then) {
-            p.then(function () {
-              if (screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock('landscape').catch(function () {});
-              }
-            }).catch(function () {});
-          }
-        } catch (e) {}
-      }
+      if (req) req.call(el);
     } else {
-      if (screen.orientation && screen.orientation.unlock) {
-        try { screen.orientation.unlock(); } catch (e) {}
-      }
       var exit = document.exitFullscreen || document.webkitExitFullscreen;
-      if (exit) { try { exit.call(document); } catch (e) {} }
+      if (exit) exit.call(document);
     }
   });
+
   ['fullscreenchange', 'webkitfullscreenchange'].forEach(function (ev) {
-    document.addEventListener(ev, function () { setTimeout(resize, 120); });
+    document.addEventListener(ev, function () {
+      setTimeout(resize, 120);
+    });
   });
 
-  /* ============================================================
-     FILE INPUT / DRAG-DROP
-     ============================================================ */
-  btnOpen.addEventListener('click', function () { unlockAudio(); fileInput.click(); });
+  /* ---------- file input ---------- */
+  btnOpen.addEventListener('click', function () { fileInput.click(); });
+  btnChoose.addEventListener('click', function () { fileInput.click(); });
   fileInput.addEventListener('change', function () {
     var f = fileInput.files && fileInput.files[0];
     if (f) handleFile(f);
-    fileInput.value = '';
+    fileInput.value = '';            // allow re-picking the same file
   });
 
+  /* ---------- drag & drop ---------- */
   var dragDepth = 0;
   document.addEventListener('dragenter', function (e) {
-    e.preventDefault(); dragDepth++;
+    e.preventDefault();
+    dragDepth++;
     document.body.classList.add('dragging');
   });
   document.addEventListener('dragover', function (e) { e.preventDefault(); });
@@ -1408,42 +645,41 @@
     dragDepth = 0;
     document.body.classList.remove('dragging');
     var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-    if (f) { unlockAudio(); handleFile(f); }
+    if (f) handleFile(f);
   });
 
-  /* ============================================================
-     KEYBOARD
-     ============================================================ */
+  /* ---------- keyboard ---------- */
   var KEYMAP = {
-    ArrowUp: BTN.UP, ArrowDown: BTN.DOWN, ArrowLeft: BTN.LEFT, ArrowRight: BTN.RIGHT,
+    ArrowUp: BTN.UP,    ArrowDown: BTN.DOWN,
+    ArrowLeft: BTN.LEFT, ArrowRight: BTN.RIGHT,
     KeyW: BTN.UP, KeyS: BTN.DOWN, KeyA: BTN.LEFT, KeyD: BTN.RIGHT,
     KeyX: BTN.A, KeyK: BTN.A,
     KeyZ: BTN.B, KeyJ: BTN.B,
     Enter: BTN.START, NumpadEnter: BTN.START,
     ShiftLeft: BTN.SELECT, ShiftRight: BTN.SELECT
   };
+
   var heldKeys = new Set();
 
   window.addEventListener('keydown', function (e) {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
+
     if (e.code === 'Escape' || e.code === 'KeyP') {
       if (nes) setRunning(!running);
-      e.preventDefault(); return;
+      e.preventDefault();
+      return;
     }
-    if (e.code === 'KeyT') { turboA = true; e.preventDefault(); return; }
-    if (e.code === 'KeyY') { turboB = true; e.preventDefault(); return; }
 
     var b = KEYMAP[e.code];
     if (b === undefined) return;
     e.preventDefault();
+
     if (heldKeys.has(e.code)) return;
     heldKeys.add(e.code);
     if (nes) nes.buttonDown(1, b);
   }, { passive: false });
 
   window.addEventListener('keyup', function (e) {
-    if (e.code === 'KeyT') { turboA = false; return; }
-    if (e.code === 'KeyY') { turboB = false; return; }
     var b = KEYMAP[e.code];
     if (b === undefined) return;
     e.preventDefault();
@@ -1458,12 +694,9 @@
       if (b !== undefined && nes) nes.buttonUp(1, b);
     });
     heldKeys.clear();
-    turboA = false; turboB = false;
   });
 
-  /* ============================================================
-     GAMEPAD
-     ============================================================ */
+  /* ---------- gamepad ---------- */
   var GP_BUTTONS = { 0: BTN.A, 1: BTN.B, 8: BTN.SELECT, 9: BTN.START,
                      12: BTN.UP, 13: BTN.DOWN, 14: BTN.LEFT, 15: BTN.RIGHT };
   var gpPrev = {};
@@ -1471,9 +704,11 @@
   function pollGamepads() {
     if (!nes || !navigator.getGamepads) return;
     var pads = navigator.getGamepads();
+
     for (var p = 0; p < pads.length; p++) {
       var pad = pads[p];
-      if (!pad) { gpPrev[p] = {}; continue; }
+      if (!pad) continue;
+
       var now = {};
       for (var idx in GP_BUTTONS) {
         var btn = pad.buttons[idx];
@@ -1484,24 +719,24 @@
       if (ax >  0.5) now[BTN.RIGHT] = true;
       if (ay < -0.5) now[BTN.UP]    = true;
       if (ay >  0.5) now[BTN.DOWN]  = true;
+
       var prev = gpPrev[p] || {};
       for (var b = 0; b < 8; b++) {
-        if (now[b] && !prev[b])      nes.buttonDown(1, b);
-        else if (!now[b] && prev[b]) nes.buttonUp(1, b);
+        if (now[b] && !prev[b])       nes.buttonDown(1, b);
+        else if (!now[b] && prev[b])  nes.buttonUp(1, b);
       }
       gpPrev[p] = now;
     }
   }
 
-  /* ============================================================
-     TOUCH CONTROLS + TURBO
-     ============================================================ */
+  /* ---------- touch controls ---------- */
   if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
     document.body.classList.add('touch');
   }
 
   Array.prototype.forEach.call(document.querySelectorAll('[data-btn]'), function (el) {
     var b = parseInt(el.getAttribute('data-btn'), 10);
+
     function press(e) {
       e.preventDefault();
       try { el.setPointerCapture(e.pointerId); } catch (_) {}
@@ -1512,6 +747,7 @@
       el.classList.remove('on');
       if (nes) nes.buttonUp(1, b);
     }
+
     el.addEventListener('pointerdown', press);
     el.addEventListener('pointerup', release);
     el.addEventListener('pointercancel', release);
@@ -1519,62 +755,7 @@
     el.addEventListener('contextmenu', function (e) { e.preventDefault(); });
   });
 
-  var turboA = false, turboB = false;
-  var turboAOn = false, turboBOn = false;
-  var turboInterval = null;
-  var turboFlip = false;
-
-  function processTurbo() {
-    var wantA = turboA || turboAOn;
-    var wantB = turboB || turboBOn;
-    if (!wantA && !wantB) {
-      if (turboInterval) { clearInterval(turboInterval); turboInterval = null; }
-      if (nes) {
-        if (turboFlip) {
-          nes.buttonUp(1, BTN.A); nes.buttonUp(1, BTN.B);
-        }
-      }
-      turboFlip = false;
-      return;
-    }
-    if (!turboInterval) {
-      turboInterval = setInterval(function () {
-        if (!nes) return;
-        turboFlip = !turboFlip;
-        if (wantA) {
-          if (turboFlip) nes.buttonDown(1, BTN.A);
-          else           nes.buttonUp(1, BTN.A);
-        }
-        if (wantB) {
-          if (turboFlip) nes.buttonDown(1, BTN.B);
-          else           nes.buttonUp(1, BTN.B);
-        }
-      }, 33);
-    }
-  }
-
-  Array.prototype.forEach.call(document.querySelectorAll('[data-turbo]'), function (el) {
-    var which = el.getAttribute('data-turbo');
-    function press(e) {
-      e.preventDefault();
-      try { el.setPointerCapture(e.pointerId); } catch (_) {}
-      el.classList.add('on');
-      if (which === '0') turboAOn = true; else turboBOn = true;
-    }
-    function release() {
-      el.classList.remove('on');
-      if (which === '0') turboAOn = false; else turboBOn = false;
-    }
-    el.addEventListener('pointerdown', press);
-    el.addEventListener('pointerup', release);
-    el.addEventListener('pointercancel', release);
-    el.addEventListener('lostpointercapture', release);
-    el.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-  });
-
-  /* ============================================================
-     CDN LOADER + BOOT
-     ============================================================ */
+  /* ---------- CDN loader for jsnes ---------- */
   var CDNS = [
     'https://cdn.jsdelivr.net/npm/jsnes@1.2.1/dist/jsnes.min.js',
     'https://unpkg.com/jsnes@1.2.1/dist/jsnes.min.js',
@@ -1584,75 +765,115 @@
   function loadScript(src) {
     return new Promise(function (resolve, reject) {
       var s = document.createElement('script');
-      s.src = src; s.async = true;
+      s.src = src;
       s.onload = resolve;
       s.onerror = function () { reject(new Error('Failed: ' + src)); };
       document.head.appendChild(s);
     });
   }
 
-  function fetchWithTimeout(url, opts, ms) {
-    var ctrl = new AbortController();
-    var timer = setTimeout(function () { ctrl.abort(); }, ms);
-    opts = opts || {};
-    opts.signal = ctrl.signal;
-    return fetch(url, opts).then(
-      function (r) { clearTimeout(timer); return r; },
-      function (e) { clearTimeout(timer); throw e; }
-    );
-  }
-
   (function bootCore(i) {
     if (i >= CDNS.length) {
       showError('Could not load the emulator core from any CDN. ' +
-                'Check your connection or self-host jsnes.min.js next to this file.');
+                'Check your internet connection or self-host jsnes.min.js next to this file.');
       return;
     }
     loadScript(CDNS[i])
       .then(function () {
-        if (window.jsnes) bootApp();
-        else bootCore(i + 1);
+        if (window.jsnes) {
+          // If a ROM was requested via ?rom=, load it now.
+          var url = new URLSearchParams(location.search).get('rom');
+          if (url) fetchRom(url);
+          else autoLoadROM(0);          // <-- default ROM from GitHub
+        } else {
+          bootCore(i + 1);
+        }
       })
       .catch(function () { bootCore(i + 1); });
   })(0);
 
-  function bootApp() {
-    fetchManifest().then(function () {
-      /* Priority: ?game= → ?rom= → auto-load SMB */
-      renderLanding();
-    });
+  function fetchRom(url) {
+    fetch(url)
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.arrayBuffer();
+      })
+      .then(function (buf) {
+        loadROM(buf, url.split('/').pop().split('?')[0] || 'game.nes');
+      })
+      .catch(function (e) {
+        showError('Could not load "' + url + '": ' + e.message);
+      });
   }
 
   /* ============================================================
-     DEBUG SHORTCUTS
+     AUTO-LOAD — direct ROM from the HexSleuth/NES-Web-Player repo
      ============================================================ */
-  window.addEventListener('keydown', function (e) {
-    if (e.ctrlKey && e.shiftKey && e.code === 'KeyD') {
-      e.preventDefault();
-      if (window.__nesTrace) window.__nesTrace();
-      if (window.__nesPpuTrace) window.__nesPpuTrace();
-      toast('Traces dumped to console');
-    } else if (e.ctrlKey && e.shiftKey && e.code === 'KeyF') {
-      e.preventDefault();
-      cycleShader();
-    }
-  });
 
-  /* ============================================================
-     INIT
-     ============================================================ */
+  var ROM_FILE = 'Super%20Mario%20Bros.%20(Japan%2C%20USA).nes';
+  var ROM_REPO = 'HexSleuth/NES-Web-Player';
+
+  var DEFAULT_ROMS = [
+    // 1) jsDelivr GitHub CDN (fast, CORS enabled, cached)
+    'https://cdn.jsdelivr.net/gh/' + ROM_REPO + '@main/' + ROM_FILE,
+    // 2) GitHub raw (canonical source)
+    'https://raw.githubusercontent.com/' + ROM_REPO + '/main/' + ROM_FILE,
+    // 3) raw.githack (mirror with correct content-type)
+    'https://raw.githack.com/' + ROM_REPO + '/main/' + ROM_FILE,
+    // 4) Statically (another GitHub CDN mirror)
+    'https://cdn.statically.io/gh/' + ROM_REPO + '/main/' + ROM_FILE
+  ];
+
+  var autoLoadTried = false;
+
+  function autoLoadROM(i) {
+    if (autoLoadTried && i === 0) return;   // only auto-load once
+    if (i === 0) autoLoadTried = true;
+
+    if (i >= DEFAULT_ROMS.length) {
+      showError('Could not auto-load the ROM from GitHub. ' +
+                'Drop a .nes file here or use “Choose ROM…”.');
+      return;
+    }
+
+    showOverlay(
+      '<span class="spin"></span>' +
+      '<h1 style="margin-top:10px">Loading ROM…</h1>' +
+      '<p style="font-size:12px">Super Mario Bros. (Japan, USA).nes</p>' +
+      '<div class="bar"><i></i></div>'
+    );
+
+    fetch(DEFAULT_ROMS[i], { cache: 'force-cache' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.arrayBuffer();
+      })
+      .then(function (buf) {
+        var bytes = new Uint8Array(buf);
+        // Sanity check before handing to the core
+        if (bytes.length < 16 ||
+            bytes[0] !== 0x4E || bytes[1] !== 0x45 ||
+            bytes[2] !== 0x53 || bytes[3] !== 0x1A) {
+          throw new Error('Invalid iNES header from mirror ' + i);
+        }
+        loadROM(buf, 'Super Mario Bros. (Japan, USA).nes');
+      })
+      .catch(function (e) {
+        console.warn('[NES] ROM mirror ' + i + ' failed:', e.message);
+        autoLoadROM(i + 1);
+      });
+  }
+
+  /* Expose a manual retry hook (also used by ?rom= handling) */
+  window.__nesAutoLoad = function () { autoLoadTried = false; autoLoadROM(0); };
+
+  /* ---------- init ---------- */
   updatePauseBtn();
-  btnMute.dataset.muted = 'false';
-  btnShader.title = 'Video filter: ' + SHADER_NAMES[0];
   requestAnimationFrame(resize);
   setTimeout(resize, 60);
 
 })();
 </script>
-
-<!-- ============================================================
-     SYSTEM JAVASCRIPT — unchanged
-     ============================================================ -->
 <script>
 // Disable right-click
 document.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -1662,6 +883,7 @@ function ctrlShiftKey(e, keyCode) {
 }
 
 document.onkeydown = (e) => {
+  // Disable F12, Ctrl + Shift + I, Ctrl + Shift + J, Ctrl + U
   if (
     event.keyCode === 123 ||
     ctrlShiftKey(e, 'I') ||
